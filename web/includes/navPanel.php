@@ -78,16 +78,10 @@ if (login_check($mysqli) == true)
                 <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
     			<ul class="nav nav-second-level">
     				<li>
-    					<a href="addCourse">Add a Course</a>
+    					<a href="createBulkCourse">Add a Course (CSV Upload)</a>
     				</li>
     				<li>
-    					<a href="addBulkCourse">Add a Course (CSV Upload)</a>
-    				</li>
-    				<li>
-    					<a href="deleteCourse">Delete a Course</a>
-    				</li>
-    				<li>
-    					<a href="viewAlCoursesTable">View All Courses</a>
+    					<a href="viewAllCoursesTable">View All Courses</a>
     				</li>
     			</ul>	
             </li>
