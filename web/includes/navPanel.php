@@ -77,18 +77,19 @@ if (login_check($mysqli) == true)
     			</ul>	
             </li>
             <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> View Tables <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="viewAllCourses">View all Courses</a>
                     </li>
-                </ul>   
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Rubrics <span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
                     <li>
                         <a href="viewAllRubrics">View all Rubrics</a>
+                    </li>
+                    <li>
+                        <a href="viewAllStudents">View all Students</a>
+                    </li>
+                    <li>
+                        <a href="viewCurrentStudents">View Current Students</a>
                     </li>
                 </ul>   
             </li>
@@ -103,9 +104,6 @@ if (login_check($mysqli) == true)
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="createBulkStudent">Add Student (CSV Upload)</a>
-                    </li>
-                    <li>
-                        <a href="viewStudentTable">View Student List</a>
                     </li>
                     <li>
                         <a href="viewRubricForStudent">View Rubric for Student</a>
