@@ -59,6 +59,8 @@ if (login_check($mysqli) == true)
 	if (isAdmin($mysqli))
     {
 		// We will show administrative links here
+		// I should fix the adminPasswordReset
+
     echo '
             <li>
                 <a href="#"><i class="fa fa-users fa-fw"></i> Users <span class="fa arrow"></span></a>
@@ -74,17 +76,6 @@ if (login_check($mysqli) == true)
     				</li>
     			</ul>	
             </li>
-            <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
-    			<ul class="nav nav-second-level">
-    				<li>
-    					<a href="createBulkCourse">Add a Course (CSV Upload)</a>
-    				</li>
-    				<li>
-    					<a href="viewAllCoursesTable">View All Courses</a>
-    				</li>
-    			</ul>	
-            </li>
         ';
     }
 	if (isFaculty($mysqli))
@@ -92,13 +83,24 @@ if (login_check($mysqli) == true)
 	// All links that are not administrative should go here
     echo '
             <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Classes <span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Students <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
-                        <a href="viewStudentList">View Student List</a>
+                        <a href="createBulkStudent">Add Student (CSV Upload)</a>
                     </li>
                     <li>
-                        <a href="viewGradeForStudent">View Grades for Student</a>
+                        <a href="viewStudentTable">View Student List</a>
+                    </li>
+                    <li>
+                        <a href="viewRubricForStudent">View Rubric for Student</a>
+                    </li>
+                </ul>   
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="viewAllCourses">View all Courses</a>
                     </li>
                 </ul>   
             </li>
