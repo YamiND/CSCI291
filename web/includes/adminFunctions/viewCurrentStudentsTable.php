@@ -1,10 +1,12 @@
 <?php 
 
+date_default_timezone_set('UTC');
+
 function checkPermissions($mysqli)
 {
     if ((login_check($mysqli) == true) && (isAdmin($mysqli)))
     {
-        generateCourseTable($mysqli);
+        generateStudentsTable($mysqli);
     }
     else
     {
@@ -14,7 +16,7 @@ function checkPermissions($mysqli)
     }
 }
 
-function generateCourseTable($mysqli)
+function generateStudentsTable($mysqli)
 {
 	echo '
         <!-- DataTables CSS -->
@@ -31,7 +33,7 @@ function generateCourseTable($mysqli)
             <div class="row">
                 <div class="col-lg-12">
         ';
-                getCourseTable($mysqli);
+                getStudentsTable($mysqli);
 
 
         echo '      
@@ -42,40 +44,62 @@ function generateCourseTable($mysqli)
     ';
 }
 
-function getCourseTable($mysqli)
+function getStudentsTable($mysqli)
 {
     echo '
         <div class="panel panel-default">
                         <div class="panel-heading" id="Courses"> 
-                        	Courses
+                        	Students
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <table width="100%" class="table table-striped table-bordered table-hover" id="courses">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="students">
                                 <thead>
                                     <tr>
-                                        <th>Course Name</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
+                                        <th>Email</th>
                                         <th>Semester</th>
-										<th>Year</th>
                                     </tr>
                                 </thead>
                                 <tbody>
         ';
-        
-	if ($stmt = $mysqli->prepare("SELECT courseName, courseSemester, courseYear FROM courses"))
+
+
+	// Get current semester
+	$currYear = date('Y');
+	$currDate = date('Y-m-d');
+
+	if (($currDate > "$currYear-01-01") && ($currDate < "$currYear-06-01"))
 	{
+		$semester = "SP$currYear";
+	}
+	else if (($currDate > "$currYear-06-01") && ($currDate < "$currYear-08-01"))
+	{
+		$semester = "SU$currYear";
+	}
+	else
+	{
+		$semester = "FA$currYear";
+	}
+
+	if ($stmt = $mysqli->prepare("SELECT studentFirstName, studentLastName, studentEmail, studentSemester FROM students WHERE studentSemester = ?"))
+	{
+		$stmt->bind_param('s', $semester);
+
 		if($stmt->execute())
 		{
-			$stmt->bind_result($courseName, $courseSemester, $courseYear);
+			$stmt->bind_result($studentFirstName, $studentLastName, $studentEmail, $studentSemester);
 			$stmt->store_result();
 
 			while($stmt->fetch())
 			{
    	     		echo '
 					<tr class="gradeA">
-  						<td>' . $courseName . '</td>
-  						<td>' . $courseSemester . '</td>
-  						<td>' . $courseYear . '</td>
+  						<td>' . $studentFirstName . '</td>
+  						<td>' . $studentLastName . '</td>
+  						<td>' . $studentEmail . '</td>
+  						<td>' . $studentSemester . '</td>
             		</tr>
 					';
 			}			
@@ -101,7 +125,7 @@ function getCourseTable($mysqli)
 
     <script>
     $(document).ready(function() {
-        $(\'#courses\').DataTable({
+        $(\'#students\').DataTable({
             responsive: true
         });
     });
