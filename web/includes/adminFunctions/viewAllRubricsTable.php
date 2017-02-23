@@ -46,8 +46,8 @@ function getRubricTable($mysqli)
 {
     echo '
         <div class="panel panel-default">
-                        <div class="panel-heading" id="Courses"> 
-                        	Courses
+                        <div class="panel-heading" id="Rubrics"> 
+                        	Rubrics
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
