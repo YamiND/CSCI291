@@ -76,6 +76,22 @@ if (login_check($mysqli) == true)
     				</li>
     			</ul>	
             </li>
+            <li>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="viewAllCourses">View all Courses</a>
+                    </li>
+                </ul>   
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Rubrics <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="viewAllRubrics">View all Rubrics</a>
+                    </li>
+                </ul>   
+            </li>
         ';
     }
 	if (isFaculty($mysqli))
@@ -93,14 +109,6 @@ if (login_check($mysqli) == true)
                     </li>
                     <li>
                         <a href="viewRubricForStudent">View Rubric for Student</a>
-                    </li>
-                </ul>   
-            </li>
-            <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Courses <span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level">
-                    <li>
-                        <a href="viewAllCourses">View all Courses</a>
                     </li>
                 </ul>   
             </li>
