@@ -95,7 +95,7 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 			while ($stmt->fetch())
 			{
 				$rubricName = getRubricName($rubricID, $mysqli);
-				echo "<h4>Rubric: $rubricName </h4>";
+				echo "<h4>$rubricName </h4>";
 			
 				$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
