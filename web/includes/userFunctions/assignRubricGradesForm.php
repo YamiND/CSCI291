@@ -66,13 +66,9 @@ function selectCurrentStudent($mysqli)
 					{
                         chooseCurrentStudentForm($mysqli);
 					}
-					else
+					else if (isset($_SESSION['studentID']) && !isset($_SESSION['rubricID']))
 					{
 						$_SESSION['courseID'] = getCourseID($_SESSION['studentID'], $mysqli);
-					}
-
-					if (!isset($_SESSION['rubricID']))
-					{
 						echo "<br>";
 						echo "<h4>Select Rubric for Class</h4>";
 						chooseRubricForm($_SESSION['courseID'], $mysqli);
@@ -120,6 +116,9 @@ function assignStudentGrades($studentID, $rubricID, $mysqli)
 	echo "<br>";
 
 	generateFormStart("../includes/userFunctions/assignRubricGrades", "post");
+		
+		generateFormHiddenInput("studentID", $studentID);		
+		generateFormHiddenInput("rubricID", $rubricID);		
 
 		$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
