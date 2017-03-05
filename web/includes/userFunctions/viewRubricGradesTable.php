@@ -104,7 +104,6 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 			
 				$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
-
 				echo "<ul><dl>";
 
 				for ($i = 0; $i < count($rubricDescArray); $i++)

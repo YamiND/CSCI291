@@ -90,6 +90,10 @@ function generateFormInputDiv($label = NULL, $type = "text", $name = NULL, $valu
 		           echo  '<input class="form-control" type="' . $type . '" name="' . $name . '" value="' . $value . '" min="' . $min . '" max="' . $max . '" ' . $disabled . '>';
         		break;
 
+        	case "number":
+		           echo  '<input class="form-control" type="' . $type . '" name="' . $name . '" value="' . $value . '" min="' . $min . '" max="' . $max . '" ' . $disabled . '>';
+        		break;
+
         	default:
         		echo  '<input class="form-control" type="' . $type . '" placeholder="' . $placeholder . '" name="' . $name . '" value="' . $value . '"' . $disabled . '>';
         		break;
