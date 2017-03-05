@@ -1,10 +1,6 @@
 <?php
-
 // Our constants
 include("../includes/customizations.php");
-
-include('../includes/adminFunctions/viewTotalAccounts.php'); 
-include('../includes/adminFunctions/viewTotalClasses.php'); 
 
 echo '
         <!DOCTYPE html>
@@ -35,18 +31,31 @@ echo '
                         <!-- /.col-lg-12 -->
                     </div>
             ';
-
-		//Add our multi code here	
-		if (isAdmin($mysqli))
-		{
-		viewTotalUsers($mysqli, "Administrators", "adminProfile");
-    		viewTotalUsers($mysqli, "Students", "studentProfile");
-    		viewTotalUsers($mysqli, "Teachers", "teacherProfile");
-    		viewTotalUsers($mysqli, "Parents", "parentProfile");
-
-    		viewTotalClasses($mysqli);
-		}
-
+	echo ' 
+               <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-university fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge">' . getNumCurrentStudents($mysqli) . ' </div>
+                                    <div>Current Students</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="viewCurrentStudents">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Students</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+	';
+			
     echo '
                 </div>
                 <!-- /#page-wrapper -->
