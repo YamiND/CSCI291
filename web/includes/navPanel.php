@@ -3,6 +3,8 @@ include_once '../includes/dbConnect.php';
 include_once '../includes/functions.php';
 include_once '../includes/panelSessionMessages.php';
 include_once '../includes/formTemplate.php';
+include_once '../includes/rubricFunctions.php';
+include_once '../includes/studentFunctions.php';
 
 sec_session_start();
 
@@ -100,13 +102,24 @@ if (login_check($mysqli) == true)
 	// All links that are not administrative should go here
     echo '
             <li>
-                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Students <span class="fa arrow"></span></a>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Current Semester Students <span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="createBulkStudent">Add Student (CSV Upload)</a>
                     </li>
                     <li>
-                        <a href="viewRubricForStudent">View Rubric for Student</a>
+                        <a href="viewRubricGrades">View Rubric Grades</a>
+                    </li>
+                    <li>
+                        <a href="assignRubricGrades">Assign Rubric Grades</a>
+                    </li>
+                </ul>   
+            </li>
+            <li>
+                <a href="#"><i class="fa fa-graduation-cap fa-fw"></i> Previous Semester Students <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level">
+                    <li>
+                        <a href="viewOldRubricGrades">View Old Rubric Grades</a>
                     </li>
                 </ul>   
             </li>
