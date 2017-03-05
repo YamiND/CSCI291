@@ -52,7 +52,7 @@ function parseCSV($mysqli)
 				$userLastName = $userCSV[$i][2];
 				$isAdmin = $userCSV[$i][3];
 
-				$value = createAccount($userEmail, $userFirstName, $userLastName, $isAdmin, $mysqli);
+				$value = createUserAccount($userEmail, $userFirstName, $userLastName, $isAdmin, $mysqli);
 
 				$row = explode(',', $value);
 				fputcsv($fp, $row);
@@ -71,21 +71,13 @@ function parseCSV($mysqli)
 	}
 }
 
-function createAccount($userEmail, $userFirstName, $userLastName, $isAdmin, $mysqli)
+function createUserAccount($userEmail, $userFirstName, $userLastName, $isAdmin, $mysqli)
 {
 	$password = randomString();	
-
-	$value = createUserAccount($userEmail, $password, $userFirstName, $userLastName, $isAdmin, $mysqli);
-
-	return $value;
-}
-
-function createUserAccount($userEmail, $password, $userFirstName, $userLastName, $isAdmin = false, $mysqli)
-{
 	$randomSalt = hash('sha512', uniqid(mt_rand(1, mt_getrandmax()), true));
 	$hashedPassword = hash("sha512", $password . $randomSalt);
 
-	if ($isAdmin == "true")
+	if ($isAdmin == 1)
 	{
 		$isAdmin = true;
 	}
