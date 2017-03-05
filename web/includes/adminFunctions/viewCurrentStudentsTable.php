@@ -4,7 +4,7 @@ date_default_timezone_set('UTC');
 
 function checkPermissions($mysqli)
 {
-    if ((login_check($mysqli) == true) && (isAdmin($mysqli)))
+    if ((login_check($mysqli) == true) && (isAdmin($mysqli) || isFaculty($mysqli)))
     {
         generateStudentsTable($mysqli);
     }
