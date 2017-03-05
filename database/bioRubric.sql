@@ -11,7 +11,7 @@ USE `bioRubricDB` ;
 DROP TABLE IF EXISTS `bioRubricDB`.`users` ;
 
 CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`users` (
-  `userID` INT NOT NULL ,
+  `userID` INT NOT NULL AUTO_INCREMENT ,
   `userEmail` VARCHAR(45) NOT NULL ,
   `userPassword` VARCHAR(256) NOT NULL ,
   `userSalt` VARCHAR(256) NOT NULL ,
@@ -29,9 +29,8 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bioRubricDB`.`courses` ;
 
 CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`courses` (
-  `courseID` INT NOT NULL ,
-  `courseName` VARCHAR(7) NOT NULL ,
-  `courseSemester` VARCHAR(6) NOT NULL ,
+  `courseID` INT NOT NULL AUTO_INCREMENT ,
+  `courseName` VARCHAR(12) NOT NULL ,
   PRIMARY KEY (`courseID`) )
 ENGINE = InnoDB;
 
@@ -42,10 +41,12 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bioRubricDB`.`students` ;
 
 CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`students` (
-  `studentID` INT NOT NULL ,
+  `studentID` INT NOT NULL AUTO_INCREMENT ,
   `studentFirstName` VARCHAR(45) NOT NULL ,
   `studentLastName` VARCHAR(45) NOT NULL ,
   `studentEmail` VARCHAR(256) NOT NULL ,
+  `studentSemester` VARCHAR(6) NOT NULL ,
+  `studentCourseID` INT NOT NULL ,
   PRIMARY KEY (`studentID`) )
 ENGINE = InnoDB;
 
@@ -69,31 +70,62 @@ ENGINE = InnoDB;
 DROP TABLE IF EXISTS `bioRubricDB`.`gradedRubrics` ;
 
 CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`gradedRubrics` (
-  `gradeRubricID` INT NOT NULL ,
+  `gradeRubricID` INT NOT NULL AUTO_INCREMENT ,
   `rubricID` INT NOT NULL ,
   `studentID` INT NOT NULL ,
-  `piece1` INT NULL ,
-  `piece2` INT NULL ,
-  `piece3` INT NULL ,
-  `piece4` INT NULL ,
-  `piece5` INT NULL ,
-  `piece6` INT NULL ,
-  `piece7` INT NULL ,
-  `piece8` INT NULL ,
-  `piece9` INT NULL ,
-  `piece10` INT NULL ,
+  `piece1` DOUBLE NULL ,
+  `piece2` DOUBLE NULL ,
+  `piece3` DOUBLE NULL ,
+  `piece4` DOUBLE NULL ,
+  `piece5` DOUBLE NULL ,
+  `piece6` DOUBLE NULL ,
+  `piece7` DOUBLE NULL ,
+  `piece8` DOUBLE NULL ,
+  `piece9` DOUBLE NULL ,
+  `piece10` DOUBLE NULL ,
   PRIMARY KEY (`gradeRubricID`) )
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `bioRubricDB`.`studentClassList`
+-- Table `bioRubricDB`.`rubricDescriptions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `bioRubricDB`.`studentClassList` ;
+DROP TABLE IF EXISTS `bioRubricDB`.`rubricDescriptions` ;
 
-CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`studentClassList` (
-  `courseID` INT NOT NULL ,
-  `studentID` INT NOT NULL )
+CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`rubricDescriptions` (
+  `rubricID` INT NOT NULL ,
+  `desc1` VARCHAR(100) NULL ,
+  `desc2` VARCHAR(100) NULL ,
+  `desc3` VARCHAR(100) NULL ,
+  `desc4` VARCHAR(100) NULL ,
+  `desc5` VARCHAR(100) NULL ,
+  `desc6` VARCHAR(100) NULL ,
+  `desc7` VARCHAR(100) NULL ,
+  `desc8` VARCHAR(100) NULL ,
+  `desc9` VARCHAR(100) NULL ,
+  `desc10` VARCHAR(100) NULL ,
+  PRIMARY KEY (`rubricID`) )
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `bioRubricDB`.`rubricPointsPossible`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `bioRubricDB`.`rubricPointsPossible` ;
+
+CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`rubricPointsPossible` (
+  `rubricID` INT NOT NULL AUTO_INCREMENT ,
+  `point1` DOUBLE NULL ,
+  `point2` DOUBLE NULL ,
+  `point3` DOUBLE NULL ,
+  `point4` DOUBLE NULL ,
+  `point5` DOUBLE NULL ,
+  `point6` DOUBLE NULL ,
+  `point7` DOUBLE NULL ,
+  `point8` DOUBLE NULL ,
+  `point9` DOUBLE NULL ,
+  `point10` DOUBLE NULL ,
+  PRIMARY KEY (`rubricID`) )
 ENGINE = InnoDB;
 
 USE `bioRubricDB` ;
@@ -125,9 +157,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `bioRubricDB`;
-INSERT INTO `bioRubricDB`.`courses` (`courseID`, `courseName`, `courseSemester`) VALUES (1, 'BIOL398', 'FALL17');
-INSERT INTO `bioRubricDB`.`courses` (`courseID`, `courseName`, `courseSemester`) VALUES (2, 'BIOL499', 'SPRING16');
-INSERT INTO `bioRubricDB`.`courses` (`courseID`, `courseName`, `courseSemester`) VALUES (3, 'BIOL399', 'SUMMER17');
+INSERT INTO `bioRubricDB`.`courses` (`courseID`, `courseName`) VALUES (1, 'BIOL398/399');
+INSERT INTO `bioRubricDB`.`courses` (`courseID`, `courseName`) VALUES (2, 'BIOL499');
 
 COMMIT;
 
@@ -136,9 +167,9 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `bioRubricDB`;
-INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`) VALUES (1, 'Tyler', 'Postma', 'tpostma@lssu.edu');
-INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`) VALUES (2, 'Test', 'Student', 'tstudent@lssu.edu');
-INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`) VALUES (3, 'Another', 'Student', 'astudent@lssu.edu');
+INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`, `studentSemester`, `studentCourseID`) VALUES (1, 'Tyler', 'Postma', 'tpostma@lssu.edu', 'SP2017', 1);
+INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`, `studentSemester`, `studentCourseID`) VALUES (2, 'Test', 'Student', 'tstudent@lssu.edu', 'SP2017', 2);
+INSERT INTO `bioRubricDB`.`students` (`studentID`, `studentFirstName`, `studentLastName`, `studentEmail`, `studentSemester`, `studentCourseID`) VALUES (3, 'Another', 'Student', 'astudent@lssu.edu', 'SP2017', 1);
 
 COMMIT;
 
@@ -167,12 +198,31 @@ INSERT INTO `bioRubricDB`.`gradedRubrics` (`gradeRubricID`, `rubricID`, `student
 COMMIT;
 
 -- -----------------------------------------------------
--- Data for table `bioRubricDB`.`studentClassList`
+-- Data for table `bioRubricDB`.`rubricDescriptions`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `bioRubricDB`;
-INSERT INTO `bioRubricDB`.`studentClassList` (`courseID`, `studentID`) VALUES (1, 1);
-INSERT INTO `bioRubricDB`.`studentClassList` (`courseID`, `studentID`) VALUES (2, 2);
-INSERT INTO `bioRubricDB`.`studentClassList` (`courseID`, `studentID`) VALUES (2, 3);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (1, 'Rationale and Objectives', 'Methods or Approach', 'Presentation Format', 'Mechanics of Delivery', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (2, 'Executive Summary', 'Problem Statement and Background', 'Approach', 'Outcomes and Lessons Learned', 'Style', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (3, 'Abstract', 'Introduction', 'Methods', 'Results Including Statistics', 'Discussion/Conclusion', 'Style', NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (4, 'Communicate Rationale and Scope of Project', 'Communicate Outcomes and Lessons Learned', 'Presentation', NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (5, 'Communicate Rationale and Scope of Project ', 'Communicate Results', 'Communicate Using Figures and Tables', 'Presentation', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (6, 'Organization', 'Executive Summary', 'Problem Statement/Background', 'Project Goals/Objectives', 'Approach', 'Outputs', 'Outcomes/Lessons Learned', 'Presentation', 'Style', 'Professionalism');
+INSERT INTO `bioRubricDB`.`rubricDescriptions` (`rubricID`, `desc1`, `desc2`, `desc3`, `desc4`, `desc5`, `desc6`, `desc7`, `desc8`, `desc9`, `desc10`) VALUES (7, 'Organization', 'Abstract', 'Introduction', 'Objectives/Hypothesis', 'Methods', 'Results', 'Discussion', 'Presentation', 'Style', 'Professionalism');
+
+COMMIT;
+
+-- -----------------------------------------------------
+-- Data for table `bioRubricDB`.`rubricPointsPossible`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `bioRubricDB`;
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (1, 15, 15, 10, 10, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (2, 10, 30, 20, 30, 10, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (3, 10, 20, 15, 20, 25, 10, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (4, 15, 15, 10, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (5, 10, 10, 10, 10, NULL, NULL, NULL, NULL, 10, 10);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (6, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
+INSERT INTO `bioRubricDB`.`rubricPointsPossible` (`rubricID`, `point1`, `point2`, `point3`, `point4`, `point5`, `point6`, `point7`, `point8`, `point9`, `point10`) VALUES (7, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10);
 
 COMMIT;
