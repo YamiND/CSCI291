@@ -75,7 +75,6 @@ function selectCurrentStudent($mysqli)
 					}
 					else
 					{
-						echo "<br>";
 						assignStudentGrades($_SESSION['studentID'], $_SESSION['rubricID'], $mysqli);
 					}
 
