@@ -69,7 +69,7 @@ function selectCurrentStudent($mysqli)
 					else if (isset($_SESSION['studentID']) && !isset($_SESSION['rubricID']))
 					{
 						$_SESSION['courseID'] = getCourseID($_SESSION['studentID'], $mysqli);
-						echo "<br>";
+						echo "<h3>Student is in class: " . getCourseName($_SESSION['courseID'], $mysqli) . "</h3>";
 						echo "<h4>Select Rubric for Class</h4>";
 						chooseRubricForm($_SESSION['courseID'], $mysqli);
 					}
@@ -214,6 +214,24 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 			}
 		}
 	}
+}
+
+function getCourseName($courseID, $mysqli)
+{
+    if ($stmt = $mysqli->prepare("SELECT courseName FROM courses WHERE courseID = ?"))
+    {   
+        $stmt->bind_param('i', $courseID);
+
+        if ($stmt->execute())
+        {   
+            $stmt->bind_result($courseName);
+            $stmt->store_result();
+
+            $stmt->fetch();
+
+            return $courseName;
+        }   
+    }   
 }
 
 function getCourseID($studentID, $mysqli)
