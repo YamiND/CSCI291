@@ -92,6 +92,7 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 			$stmt->bind_result($rubricID);
 			$stmt->store_result();
 
+			echo "<h3> Student is in: " . getCourseName($courseID, $mysqli) .  " </h3>";
 			echo "<h3>Rubric Grades for: " . getStudentName($studentID, $mysqli) . "</h3>";
 			echo "<br>";
 
@@ -146,6 +147,24 @@ function getCourseID($studentID, $mysqli)
 			return $courseID;
 		}
 	}
+}
+
+function getCourseName($courseID, $mysqli)
+{
+    if ($stmt = $mysqli->prepare("SELECT courseName FROM courses WHERE courseID = ?"))
+    {   
+        $stmt->bind_param('i', $courseID);
+
+        if ($stmt->execute())
+        {   
+            $stmt->bind_result($courseName);
+            $stmt->store_result();
+
+            $stmt->fetch();
+
+            return $courseName;
+        }   
+    }   
 }
 
 function chooseCurrentStudentForm($mysqli)
