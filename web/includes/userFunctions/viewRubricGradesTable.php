@@ -110,7 +110,7 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 						$stmt2->bind_result($gradeRubricID, $facultyID);
 						$stmt2->store_result();
 
-						if ($stmt->num_rows > 0)
+						if ($stmt2->num_rows > 0)
 						{
 							while ($stmt2->fetch())
 							{
@@ -198,6 +198,7 @@ function getCourseName($courseID, $mysqli)
 function chooseCurrentStudentForm($mysqli)
 {
 	echo "<br>";
+	echo "<h4>Select Student:</h4>";
 	// Get current semester
 	$currYear = date('Y');
 	$currDate = date('Y-m-d');

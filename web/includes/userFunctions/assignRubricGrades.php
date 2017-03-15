@@ -17,10 +17,11 @@ else
 
 function assignRubricGrades($mysqli)
 {
-	if (isset($_POST['studentID'], $_POST['rubricID']) && !empty($_POST['studentID']) && !empty($_POST['rubricID']))
+	if (isset($_POST['studentID'], $_POST['rubricID'], $_POST['facultyID']) && !empty($_POST['studentID']) && !empty($_POST['rubricID']) && !empty($_POST['facultyID']))
 	{
 		$rubricID = $_POST['rubricID'];
 		$studentID = $_POST['studentID'];
+		$facultyID = $_POST['facultyID'];
 
 		$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
@@ -67,13 +68,13 @@ function assignRubricGrades($mysqli)
 		$piece9 = $pieceArray[9];
 		$piece10 = $pieceArray[10];
 
-		if (getRubricGradeExists($rubricID, $studentID, $mysqli) == 1)
+		if (getRubricGradeExists($rubricID, $studentID, $facultyID, $mysqli) == 1)
 		{
-			updateGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $mysqli);
+			updateGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $facultyID, $mysqli);
 		}
 		else
 		{
-			insertGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $mysqli);
+			insertGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $facultyID, $mysqli);
 		}
 	}
 	else
@@ -83,11 +84,11 @@ function assignRubricGrades($mysqli)
 	}
 }
 
-function insertGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $mysqli)
+function insertGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $facultyID, $mysqli)
 {
-	if ($stmt = $mysqli->prepare("INSERT INTO gradedRubrics(rubricID, studentID, piece1, piece2, piece3, piece4, piece5, piece6, piece7, piece8, piece9, piece10) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"))
+	if ($stmt = $mysqli->prepare("INSERT INTO gradedRubrics(rubricID, studentID, facultyID, piece1, piece2, piece3, piece4, piece5, piece6, piece7, piece8, piece9, piece10) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"))
 	{
-		$stmt->bind_param('iidddddddddd', $rubricID, $studentID, $piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10);
+		$stmt->bind_param('iiidddddddddd', $rubricID, $studentID, $facultyID, $piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10);
 
 		if($stmt->execute())
 		{
@@ -107,11 +108,11 @@ function insertGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piec
 	}
 }
 
-function updateGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $mysqli)
+function updateGrade($piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $facultyID, $mysqli)
 {
-	if ($stmt = $mysqli->prepare("UPDATE gradedRubrics SET piece1 = ?, piece2 = ?, piece3 = ?, piece4 = ?, piece5 = ?, piece6 = ?, piece7 = ?, piece8 = ?, piece9 = ?, piece10 = ? WHERE studentID = ? AND rubricID = ?"))
+	if ($stmt = $mysqli->prepare("UPDATE gradedRubrics SET piece1 = ?, piece2 = ?, piece3 = ?, piece4 = ?, piece5 = ?, piece6 = ?, piece7 = ?, piece8 = ?, piece9 = ?, piece10 = ? WHERE studentID = ? AND rubricID = ? AND facultyID = ?"))
 	{
-		$stmt->bind_param('ddddddddddii', $piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID);
+		$stmt->bind_param('ddddddddddiii', $piece1, $piece2, $piece3, $piece4, $piece5, $piece6, $piece7, $piece8, $piece9, $piece10, $studentID, $rubricID, $facultyID);
 
 		if ($stmt->execute())
 		{

@@ -18,11 +18,11 @@ function getRubricDescriptions($rubricID, $mysqli)
 	}
 }
 
-function getRubricGradeExists($rubricID, $studentID, $mysqli)
+function getRubricGradeExists($rubricID, $studentID, $facultyID, $mysqli)
 {
-	if ($stmt = $mysqli->prepare("SELECT gradeRubricID FROM gradedRubrics WHERE rubricID = ? AND studentID = ? LIMIT 1"))
+	if ($stmt = $mysqli->prepare("SELECT gradeRubricID FROM gradedRubrics WHERE rubricID = ? AND studentID = ? AND facultyID = ? LIMIT 1"))
 	{
-		$stmt->bind_param('ii', $rubricID, $studentID);
+		$stmt->bind_param('iii', $rubricID, $studentID, $facultyID);
 		$stmt->execute();
 		$stmt->bind_result($gradeRubricID);
 		$stmt->store_result();
@@ -49,21 +49,36 @@ function getRubricName($rubricID, $mysqli)
 	}
 }
 
-function getRubricGrade($rubricID, $studentID, $pieceNumber, $mysqli)
+function getRubricGrade($gradedRubricID, $studentID, $pieceNumber, $mysqli)
 {
-	if ($stmt = $mysqli->prepare("SELECT {$pieceNumber} FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+	if ($stmt = $mysqli->prepare("SELECT {$pieceNumber} FROM gradedRubrics WHERE gradeRubricID = ? AND studentID = ?"))
 	{
-		$stmt->bind_param('ii', $rubricID, $studentID);
+		$stmt->bind_param('ii', $gradedRubricID, $studentID);
 
 		if ($stmt->execute())
 		{
 			$stmt->bind_result($pieceNumber);
 			$stmt->store_result();
 
-			$stmt->fetch();
+			if ($stmt->num_rows > 0)
+			{
+				$stmt->fetch();
 
-			return "$pieceNumber";
+				return "$pieceNumber";
+			}
+			else
+			{
+				return "No rubrics graded for student";
+			}
 		}
+		else
+		{
+			return "No rubrics graded for student";
+		}
+	}
+	else
+	{
+		return "No rubrics graded for student";
 	}
 }
 

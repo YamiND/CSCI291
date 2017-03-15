@@ -314,6 +314,7 @@ function getCourseID($studentID, $mysqli)
 function chooseCurrentStudentForm($mysqli)
 {
 	echo "<br>";
+						echo "<h4>Select Student</h4>";
 	// Get current semester
 	$currYear = date('Y');
 	$currDate = date('Y-m-d');
