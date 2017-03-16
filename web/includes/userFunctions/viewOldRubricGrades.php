@@ -65,12 +65,18 @@ function selectCurrentStudent($mysqli)
         ';
 
 					if (!isset($_SESSION['schoolSemester']))
-					{
+					{ 
+						if (isset($_SESSION['studentID']))
+						{
+							unset($_SESSION['studentID']);
+						}
+
 						echo "<h4>Select Semester</h4>";
 						chooseSchoolSemesterForm($mysqli);
 					}
 					else if (!isset($_SESSION['studentID']))
 					{
+						echo "<br>";
 						echo "<h4>Select Student</h4>";
                         chooseCurrentStudentForm($_SESSION['schoolSemester'], $mysqli);
 					}
@@ -142,39 +148,61 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 		{
 			$stmt->bind_result($rubricID);
 			$stmt->store_result();
-
+			
+			echo "<h3>Student was in Class: " . getCourseName($courseID, $mysqli) . "</h3>";
 			echo "<h3>Rubric Grades for: " . getStudentName($studentID, $mysqli) . "</h3>";
 			echo "<br>";
 
 			while ($stmt->fetch())
 			{
 				$rubricName = getRubricName($rubricID, $mysqli);
-				$totalGrade = 0;
-				$totalPointsPossible = 0;
-				echo "<h4>$rubricName </h4>";
-			
-				$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
+				echo "<h4>Rubric Name: $rubricName </h4>";
+				echo "<br>";	
 
-				echo "<ul><dl>";
+ 				if ($stmt2 = $mysqli->prepare("SELECT gradeRubricID, facultyID FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+                {   
+                    $stmt2->bind_param('ii', $rubricID, $studentID);
 
-				for ($i = 0; $i < count($rubricDescArray); $i++)
-				{
-					if ($rubricDescArray[$i] != NULL)
-					{
-						$pieceNumber = "piece" . ($i + 1);
-						$pointID = "point" . ($i + 1);
+                    if ($stmt2->execute())
+                    {   
+                        $stmt2->bind_result($gradeRubricID, $facultyID);
+                        $stmt2->store_result();
 
-						$totalGrade += getRubricGrade($rubricID, $studentID, $pieceNumber, $mysqli);
-						$totalPointsPossible += getRPPByPoint($rubricID, $pointID, $mysqli);
-						echo "<dt>$rubricDescArray[$i]</dt>";
-						
-						echo "<dd>&nbsp&nbsp&nbsp&nbsp" . getRubricGrade($rubricID, $studentID, $pieceNumber, $mysqli) . " / " . getRPPByPoint($rubricID, $pointID, $mysqli) . "</dd>";
+                        if ($stmt2->num_rows > 0)
+                        {   
+                            while ($stmt2->fetch())
+                            {   
+								$totalGrade = 0;
+								$totalPointsPossible = 0;
+								
+                                echo "<h4>Graded By: " . getFacultyName($facultyID, $mysqli) . "</h4>";
+	
+								$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
+
+								echo "<ul><dl>";
+
+								for ($i = 0; $i < count($rubricDescArray); $i++)
+								{
+									if ($rubricDescArray[$i] != NULL)
+									{
+										$pieceNumber = "piece" . ($i + 1);
+										$pointID = "point" . ($i + 1);
+
+										$totalGrade += getRubricGrade($rubricID, $studentID, $pieceNumber, $mysqli);
+										$totalPointsPossible += getRPPByPoint($rubricID, $pointID, $mysqli);
+										echo "<dt>$rubricDescArray[$i]</dt>";
+										
+										echo "<dd>&nbsp&nbsp&nbsp&nbsp" . getRubricGrade($rubricID, $studentID, $pieceNumber, $mysqli) . " / " . getRPPByPoint($rubricID, $pointID, $mysqli) . "</dd>";
+									}
+								}
+								echo "</dl></ul>";
+								echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Score for Rubric: $totalGrade / $totalPointsPossible </h5>";
+								echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Percentage for Rubric: " . number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "% </h5>";
+								echo "<br>";
+							}
+						}
 					}
 				}
-				echo "</dl></ul>";
-				echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Score for Rubric: $totalGrade / $totalPointsPossible </h5>";
-				echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Percentage for Rubric: " . number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "% </h5>";
-				echo "<br>";
 			}
 		}
 	}
@@ -231,6 +259,24 @@ function chooseCurrentStudentForm($schoolSemester, $mysqli)
 	{
 		return;
 	}
+}
+
+function getCourseName($courseID, $mysqli)
+{
+    if ($stmt = $mysqli->prepare("SELECT courseName FROM courses WHERE courseID = ?"))
+    {   
+        $stmt->bind_param('i', $courseID);
+
+        if ($stmt->execute())
+        {   
+            $stmt->bind_result($courseName);
+            $stmt->store_result();
+
+            $stmt->fetch();
+
+            return $courseName;
+        }   
+    }   
 }
 
 ?>
