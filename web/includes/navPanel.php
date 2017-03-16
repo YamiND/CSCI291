@@ -5,6 +5,7 @@ include_once '../includes/panelSessionMessages.php';
 include_once '../includes/formTemplate.php';
 include_once '../includes/rubricFunctions.php';
 include_once '../includes/studentFunctions.php';
+include_once '../includes/facultyFunctions.php';
 
 sec_session_start();
 
@@ -113,6 +114,9 @@ if (login_check($mysqli) == true)
                     <li>
                         <a href="assignRubricGrades">Assign Rubric Grades</a>
                     </li>
+                    <li>
+                        <a href="viewExportCurrentStudents">Export Current Student Grades</a>
+                    </li>
                 </ul>   
             </li>
             <li>
@@ -120,6 +124,9 @@ if (login_check($mysqli) == true)
                 <ul class="nav nav-second-level">
                     <li>
                         <a href="viewOldRubricGrades">View Old Rubric Grades</a>
+                    </li>
+                    <li>
+                        <a href="viewExportAllStudents">Export All Student Grades</a>
                     </li>
                 </ul>   
             </li>
