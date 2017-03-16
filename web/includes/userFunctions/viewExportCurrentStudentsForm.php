@@ -77,6 +77,16 @@ echo '
 								}
 							}
 
+					if (isset($_SESSION['exportChoice']))
+                    {   
+                        echo "<br>";
+                        generateFormStart("", "post"); 
+                            generateFormButton("changeChoice", "Change Choice");
+                        generateFormEnd();
+                    }   
+
+
+
 
         echo '
                                 </div>
