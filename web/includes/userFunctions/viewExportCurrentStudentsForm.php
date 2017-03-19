@@ -59,6 +59,7 @@ echo '
 								switch ($_SESSION['exportChoice'])
 								{
 									case "1":
+									chooseCurrentStudentForm($mysqli);
 									// Single Student
 									break;
 
@@ -84,10 +85,6 @@ echo '
                             generateFormButton("changeChoice", "Change Choice");
                         generateFormEnd();
                     }   
-
-
-
-
         echo '
                                 </div>
                             </div>
@@ -101,6 +98,57 @@ echo '
 
 }
 
+function chooseCurrentStudentForm($mysqli)
+{
+    echo "<h4>Select Student:</h4>";
+    // Get current semester
+    $currYear = date('Y');
+    $currDate = date('Y-m-d');
+
+    if (($currDate > "$currYear-01-01") && ($currDate < "$currYear-06-01"))
+    {
+        $semester = "SP$currYear";
+    }
+    else if (($currDate > "$currYear-06-01") && ($currDate < "$currYear-08-01"))
+    {
+        $semester = "SU$currYear";
+    }
+    else
+    {
+        $semester = "FA$currYear";
+    }
+
+    if ($stmt = $mysqli->prepare("SELECT studentID, studentFirstName, studentLastName FROM students WHERE studentSemester = ?"))
+    {
+        $stmt->bind_param('s', $semester);
+
+        if($stmt->execute())
+        {
+            $stmt->bind_result($studentID, $studentFirstName, $studentLastName);
+            $stmt->store_result();
+
+            generateFormStart("../includes/userFunctions/exportCurrentStudents", "post");
+				generateFormHiddenInput("choiceOption", "1");
+                generateFormStartSelectDiv(NULL, "studentID");
+                while($stmt->fetch())
+                {
+                    generateFormOption($studentID, "$studentLastName, $studentFirstName");
+                }
+                generateFormEndSelectDiv();
+             generateFormButton("selectStudent", "Select Student");
+            generateFormEnd();
+        }
+        else
+        {
+            echo "Error occured <br>";
+        }
+    }
+    else
+    {
+        return;
+    }
+}
+
 function getExportChoiceForm()
 {
 	generateFormStart("", "post");
@@ -111,7 +159,6 @@ function getExportChoiceForm()
 		generateFormEndSelectDiv();
         generateFormButton("selectChoiceButton", "Select Choice");
     generateFormEnd();
-
 }
 
 ?>
