@@ -125,13 +125,13 @@ function assignStudentGrades($studentID, $rubricID, $mysqli)
 
 		$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
-		if ($stmt = $mysqli->prepare("SELECT gradeRubricID FROM gradedRubrics WHERE studentID = ? AND facultyID = ? AND rubricID = ?"))
+		if ($stmt = $mysqli->prepare("SELECT gradeRubricID, facultyFeedback FROM gradedRubrics WHERE studentID = ? AND facultyID = ? AND rubricID = ?"))
 		{
 			$stmt->bind_param('iii', $studentID, $_SESSION['userID'], $rubricID);
 
 			if ($stmt->execute())
 			{
-				$stmt->bind_result($gradeRubricID);
+				$stmt->bind_result($gradeRubricID, $facultyFeedback);
 				$stmt->store_result();
 
 				if ($stmt->num_rows > 0)
@@ -151,6 +151,7 @@ function assignStudentGrades($studentID, $rubricID, $mysqli)
 								echo "<br>";
 							}
 						}
+						generateFormTextAreaDiv("Faculty Feedback","facultyFeedback","10",$facultyFeedback);
 					}
 				}
 				else
@@ -168,6 +169,7 @@ function assignStudentGrades($studentID, $rubricID, $mysqli)
 								echo "<br>";
 							}
 						}
+						generateFormTextAreaDiv("Faculty Feedback","facultyFeedback","10");
 
 				}
 			}
