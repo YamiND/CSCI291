@@ -159,13 +159,13 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 				echo "<h4>Rubric Name: $rubricName </h4>";
 				echo "<br>";	
 
- 				if ($stmt2 = $mysqli->prepare("SELECT gradeRubricID, facultyID FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+ 				if ($stmt2 = $mysqli->prepare("SELECT gradeRubricID, facultyID, facultyFeedback FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
                 {   
                     $stmt2->bind_param('ii', $rubricID, $studentID);
 
                     if ($stmt2->execute())
                     {   
-                        $stmt2->bind_result($gradeRubricID, $facultyID);
+                        $stmt2->bind_result($gradeRubricID, $facultyID, $facultyFeedback);
                         $stmt2->store_result();
 
                         if ($stmt2->num_rows > 0)
@@ -196,6 +196,7 @@ function getRubricGrades($studentID, $courseID, $mysqli)
 									}
 								}
 								echo "</dl></ul>";
+								generateFormTextAreaDiv("Faculty Feedback",NULL,"10",$facultyFeedback,"disabled");
 								echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Score for Rubric: $totalGrade / $totalPointsPossible </h5>";
 								echo "<h5>&nbsp&nbsp&nbsp&nbsp Total Percentage for Rubric: " . number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "% </h5>";
 								echo "<br>";
