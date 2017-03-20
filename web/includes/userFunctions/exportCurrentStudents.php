@@ -48,7 +48,7 @@ function parseChoice($mysqli)
 	}
 }
 
-/*function outputCourseData($mysqli)
+function outputCourseData($mysqli)
 {
 	// Delete all files in the rubricOutput directory
 	if (!is_dir("../../../rubricOutputs"))
@@ -68,21 +68,19 @@ function parseChoice($mysqli)
 		// File Contents:
 		// Course Name,Rubric Name,Graded By Name,Descriptive Piece,Grade for Piece,Total Percentage Name, Total Percentage,Faculty Feedback
 
-		if ($stmt3 = $mysqli->prepare("SELECT studentID FROM studentClassList WHERE courseID = ?"))
+		if ($stmt = $mysqli->prepare("SELECT studentID FROM studentClassList WHERE courseID = ?"))
 		{
-			$stmt3->bind_param('i', $courseID);
+			$stmt->bind_param('i', $courseID);
 
-			if ($stmt3->execute())
+			if ($stmt->execute())
 			{
-				$stmt3->bind_result($studentID);
-				$stmt3->store_result();
+				$stmt->bind_result($studentID);
+				$stmt->store_result();
 
-				if ($stmt3->num_rows > 0)
+				if ($stmt->num_rows > 0)
 				{
-					while ($stmt3->execute())
+					while ($stmt->fetch())
 					{
-						$courseID = getCourseID($studentID, $mysqli);
-
 						// Get the student's name (we will use this for the file name)
 						$studentName = getStudentName($studentID, $mysqli);
 
@@ -97,33 +95,33 @@ function parseChoice($mysqli)
 
 						// Get the faculty name
 						$facultyName = getFacultyName($_SESSION['userID'], $mysqli);
-
-						if ($stmt = $mysqli->prepare("SELECT rubricID FROM rubrics WHERE courseID = ?"))
+						
+						if ($stmt2 = $mysqli->prepare("SELECT rubricID FROM rubrics WHERE courseID = ?"))
 						{
-							$stmt->bind_param('i', $courseID);
+							$stmt2->bind_param('i', $courseID);
 
-							if ($stmt->execute())
+							if ($stmt2->execute())
 							{
-								$stmt->bind_result($rubricID);
-								$stmt->store_result();
+								$stmt2->bind_result($rubricID);
+								$stmt2->store_result();
 
-								while ($stmt->fetch())
+								while ($stmt2->fetch())
 								{
 									// Go through each Rubric 
 									$rubricName = getRubricName($rubricID, $mysqli);
 								
-									if ($stmt2 = $mysqli->prepare("SELECT gradeRubricID, facultyID, facultyFeedback FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+									if ($stmt3 = $mysqli->prepare("SELECT gradeRubricID, facultyID, facultyFeedback FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
 									{	
-										$stmt2->bind_param('ii', $rubricID, $studentID);
+										$stmt3->bind_param('ii', $rubricID, $studentID);
 
-										if ($stmt2->execute())
+										if ($stmt3->execute())
 										{
-											$stmt2->bind_result($gradeRubricID, $facultyID, $facultyFeedback);
-											$stmt2->store_result();
+											$stmt3->bind_result($gradeRubricID, $facultyID, $facultyFeedback);
+											$stmt3->store_result();
 
-											if ($stmt2->num_rows > 0)
+											if ($stmt3->num_rows > 0)
 											{
-												while ($stmt2->fetch())
+												while ($stmt3->fetch())
 												{
 													// Initiliaze Empty Array that we will use to output to CSV
 													$outputArray = [];
@@ -173,9 +171,9 @@ function parseChoice($mysqli)
 									}
 								}
 							}
+							// Close our file for the next loop
+							fclose($fp);
 						}
-						// Close our file for the next loop
-						fclose($fp);
 					}
 				}
 			}
@@ -208,7 +206,7 @@ function parseChoice($mysqli)
         readfile($outputFile);
 		exit;
 	}
-}*/
+}
 
 function outputStudentData($mysqli)
 {

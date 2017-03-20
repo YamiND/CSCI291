@@ -64,7 +64,7 @@ echo '
 									break;
 
 									case "2":
-		//								chooseClassForm();										
+										chooseClassForm();										
 									// Single Class
 									break;
 
@@ -168,8 +168,8 @@ function getExportChoiceForm()
 	generateFormStart("", "post");
         generateFormStartSelectDiv("Select what to Export", "exportChoice");
 			generateFormOption("1", "Export data for single current student");
-		//	generateFormOption("2", "Export data for single class");
-		//	generateFormOption("3", "Export data for all current students");
+			generateFormOption("2", "Export data for single class");
+			generateFormOption("3", "Export data for all current students");
 		generateFormEndSelectDiv();
         generateFormButton("selectChoiceButton", "Select Choice");
     generateFormEnd();
