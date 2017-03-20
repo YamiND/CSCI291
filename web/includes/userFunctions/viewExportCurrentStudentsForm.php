@@ -59,11 +59,12 @@ echo '
 								switch ($_SESSION['exportChoice'])
 								{
 									case "1":
-									chooseCurrentStudentForm($mysqli);
+										chooseCurrentStudentForm($mysqli);
 									// Single Student
 									break;
 
 									case "2":
+		//								chooseClassForm();										
 									// Single Class
 									break;
 
@@ -95,6 +96,19 @@ echo '
                 </div>
 			</div>
 ';
+
+}
+
+function chooseClassForm()
+{
+	generateFormStart("../includes/userFunctions/exportCurrentStudents", "post");
+		generateFormHiddenInput("choiceOption", "2");
+        generateFormStartSelectDiv("Select Course", "courseID");
+        	generateFormOption("1", "BIOL 398/399");
+        	generateFormOption("2", "BIOL 499");
+        generateFormEndSelectDiv();
+    	generateFormButton("selectCourse", "Select Course");
+	generateFormEnd();
 
 }
 
@@ -154,8 +168,8 @@ function getExportChoiceForm()
 	generateFormStart("", "post");
         generateFormStartSelectDiv("Select what to Export", "exportChoice");
 			generateFormOption("1", "Export data for single current student");
-			generateFormOption("2", "Export data for single class");
-			generateFormOption("3", "Export data for all current students");
+		//	generateFormOption("2", "Export data for single class");
+		//	generateFormOption("3", "Export data for all current students");
 		generateFormEndSelectDiv();
         generateFormButton("selectChoiceButton", "Select Choice");
     generateFormEnd();
