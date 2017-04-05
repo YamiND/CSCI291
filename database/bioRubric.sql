@@ -73,6 +73,7 @@ CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`gradedRubrics` (
   `gradeRubricID` INT NOT NULL AUTO_INCREMENT ,
   `rubricID` INT NOT NULL ,
   `studentID` INT NOT NULL ,
+  `facultyID` INT NOT NULL ,
   `piece1` DOUBLE NULL ,
   `piece2` DOUBLE NULL ,
   `piece3` DOUBLE NULL ,
@@ -83,6 +84,7 @@ CREATE  TABLE IF NOT EXISTS `bioRubricDB`.`gradedRubrics` (
   `piece8` DOUBLE NULL ,
   `piece9` DOUBLE NULL ,
   `piece10` DOUBLE NULL ,
+  `facultyFeedback` VARCHAR(4096) NULL ,
   PRIMARY KEY (`gradeRubricID`) )
 ENGINE = InnoDB;
 
@@ -149,6 +151,7 @@ START TRANSACTION;
 USE `bioRubricDB`;
 INSERT INTO `bioRubricDB`.`users` (`userID`, `userEmail`, `userPassword`, `userSalt`, `userFirstName`, `userLastName`, `isAdmin`, `isFaculty`) VALUES (1, 'tpostma@lssu.edu', '506beb3bb6a2c033392158f6451e85d5862b9997c999a3438cd3c4e93d65e7bf5b205f5cd132724f1db7ef9bd94088a72f9b9417c829cf081fffc3c2c599496f', '46d5eb8476b910c3501188f91f4fedfd593d8a7b13c27e25c34fd683297f43fd79f4f79cd87c9eaccdee8ed636adef49a461f1591013c7face1081191f5deb38', 'Tyler', 'Postma', true, true);
 INSERT INTO `bioRubricDB`.`users` (`userID`, `userEmail`, `userPassword`, `userSalt`, `userFirstName`, `userLastName`, `isAdmin`, `isFaculty`) VALUES (2, 'faculty@lssu.edu', '506beb3bb6a2c033392158f6451e85d5862b9997c999a3438cd3c4e93d65e7bf5b205f5cd132724f1db7ef9bd94088a72f9b9417c829cf081fffc3c2c599496f', '46d5eb8476b910c3501188f91f4fedfd593d8a7b13c27e25c34fd683297f43fd79f4f79cd87c9eaccdee8ed636adef49a461f1591013c7face1081191f5deb38', 'Faculty', 'LSSU', false, true);
+INSERT INTO `bioRubricDB`.`users` (`userID`, `userEmail`, `userPassword`, `userSalt`, `userFirstName`, `userLastName`, `isAdmin`, `isFaculty`) VALUES (3, 'jgarvon@lssu.edu', '506beb3bb6a2c033392158f6451e85d5862b9997c999a3438cd3c4e93d65e7bf5b205f5cd132724f1db7ef9bd94088a72f9b9417c829cf081fffc3c2c599496f', '46d5eb8476b910c3501188f91f4fedfd593d8a7b13c27e25c34fd683297f43fd79f4f79cd87c9eaccdee8ed636adef49a461f1591013c7face1081191f5deb38', 'Jason', 'Garvon', true, true);
 
 COMMIT;
 
@@ -193,7 +196,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `bioRubricDB`;
-INSERT INTO `bioRubricDB`.`gradedRubrics` (`gradeRubricID`, `rubricID`, `studentID`, `piece1`, `piece2`, `piece3`, `piece4`, `piece5`, `piece6`, `piece7`, `piece8`, `piece9`, `piece10`) VALUES (1, 1, 1, 15, 15, 10, 10, NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `bioRubricDB`.`gradedRubrics` (`gradeRubricID`, `rubricID`, `studentID`, `facultyID`, `piece1`, `piece2`, `piece3`, `piece4`, `piece5`, `piece6`, `piece7`, `piece8`, `piece9`, `piece10`, `facultyFeedback`) VALUES (1, 1, 1, 1, 15, 15, 10, 10, NULL, NULL, NULL, NULL, NULL, NULL, 'Example Feedback');
+INSERT INTO `bioRubricDB`.`gradedRubrics` (`gradeRubricID`, `rubricID`, `studentID`, `facultyID`, `piece1`, `piece2`, `piece3`, `piece4`, `piece5`, `piece6`, `piece7`, `piece8`, `piece9`, `piece10`, `facultyFeedback`) VALUES (2, 1, 1, 2, 10, 10, 5, 2, NULL, NULL, NULL, NULL, NULL, NULL, 'More feedback yayy');
 
 COMMIT;
 
