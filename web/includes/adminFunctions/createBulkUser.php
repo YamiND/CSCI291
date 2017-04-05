@@ -3,6 +3,8 @@
 include_once '../dbConnect.php';
 include_once '../functions.php';
 
+ini_set("auto_detect_line_endings", true);
+
 sec_session_start(); // Our custom secure way of starting a PHP session.
 
 if ((login_check($mysqli) == true) && (isAdmin($mysqli)))
@@ -96,31 +98,15 @@ function createUserAccount($userEmail, $userFirstName, $userLastName, $isAdmin, 
 		{
 			$stmt->store_result();
 
-			if ($stmt->num_rows > 0)
-			{
-    			$_SESSION['fail'] = 'Account Creation Failed, Account already exists';
-   				header('Location: ../../pages/createBulkUser');
-			}
-			else
+			if ($stmt->num_rows < 1)
 			{
 				if ($stmt = $mysqli->prepare("INSERT INTO users (userEmail, userPassword, userFirstName, userLastName, isAdmin, isFaculty, userSalt) VALUES (?, ?, ?, ?, ?, ?, ?)"))
 				{
-    				$stmt->bind_param('ssssiis', $userEmail, $hashedPassword, $userFirstName, $userLastName, $isAdmin, $isFaculty, $randomSalt); 
-	    			if($stmt->execute())    // Execute the prepared query.
+					$stmt->bind_param('ssssiis', $userEmail, $hashedPassword, $userFirstName, $userLastName, $isAdmin, $isFaculty, $randomSalt); 
+					if($stmt->execute())    // Execute the prepared query.
 					{
 						return "$userEmail, $password";
 					}
-					else
-					{
-   //						$_SESSION['fail'] = 'Account Creation Failed, inner insert failure';
-						$_SESSION['fail'] = $stmt->error;
-   						header('Location: ../../pages/createBulkUser');
-					}
-				}
-				else
-				{
-   					$_SESSION['fail'] = 'Account Creation Failed, outer insert failure';
-   					header('Location: ../../pages/createBulkUser');
 				}
 			}
 		}
