@@ -163,7 +163,7 @@ function outputAllData($mysqli)
 															// The subcategory name
 															$rubricSubCategory = $rubricDescArray[$i];
 
-															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli) . " / " . getRPPByPoint($rubricID, $pointID, $mysqli);
+															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
 
 															array_push($outputArray, $rubricSubCategory, $rubricCategoryScore);
 														}
@@ -322,13 +322,13 @@ function outputCourseData($mysqli)
 															// The subcategory name
 															$rubricSubCategory = $rubricDescArray[$i];
 
-															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli) . " / " . getRPPByPoint($rubricID, $pointID, $mysqli);
+															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
 
 															array_push($outputArray, $rubricSubCategory, $rubricCategoryScore);
 														}
 													}
 													$rubricPercentage =  number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "%";
-													array_push($outputArray, "Total Percentage:", $rubricPercentage, $facultyFeedback);
+													array_push($outputArray, "Total Percentage:", $rubricPercentage, "Total Points:", $totalPointsPossible, $facultyFeedback);
 
 													// Add our faculty members data to the CSV
 													fputcsv($fp, $outputArray);
