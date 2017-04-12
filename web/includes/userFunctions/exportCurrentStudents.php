@@ -38,7 +38,15 @@ function parseChoice($mysqli)
 			break;
 
 			case "3":
+				outputCourseDataSingleFile($mysqli);
+			break;
+
+			case "4":
 				outputAllData($mysqli);
+			break;
+
+			case "5":
+				outputAllDataSingleFile($mysqli);
 			break;
 
 			default:
@@ -57,7 +65,7 @@ function outputAllData($mysqli)
 		shell_exec('mkdir ../../../rubricOutputs');
 	}
 	shell_exec('rm -rf ../../../rubricOutputs/*');
-	array_map('unlink', glob("allOutput*")); 
+	shell_exec('rm -rf allOutput*');
 
 		$courseID = $_POST['courseID'];
 		$courseName = getCourseName($courseID, $mysqli);
@@ -175,16 +183,19 @@ function outputAllData($mysqli)
 													fputcsv($fp, $outputArray);
 												}
 											}
-											else
+/*											else
 											{
 												echo "No grades for student";
 											}
+*/
 										}
 									}
+/*
 									else
 									{
 										echo "No grades for student";
 									}
+*/
 								}
 							}
 							// Close our file for the next loop
@@ -223,6 +234,184 @@ function outputAllData($mysqli)
 
 }
 
+function outputAllDataSingleFile($mysqli)
+{
+	// Delete all files in the rubricOutput directory
+	if (!is_dir("../../../rubricOutputs"))
+	{
+		shell_exec('mkdir ../../../rubricOutputs');
+	}
+	shell_exec('rm -rf ../../../rubricOutputs/*');
+	shell_exec('rm -rf allOutput*');
+
+		$courseID = $_POST['courseID'];
+		$courseName = getCourseName($courseID, $mysqli);
+
+		// Output CSV Format would look like this
+		// File Name: Student's Name-Current Date.csv
+		// File Contents:
+		// Course Name,Rubric Name,Graded By Name,Descriptive Piece,Grade for Piece,Total Percentage Name, Total Percentage,Faculty Feedback
+
+	// Get current semester
+	$currYear = date('Y');
+    $currDate = date('Y-m-d');
+
+    if (($currDate > "$currYear-01-01") && ($currDate < "$currYear-06-01"))
+    {
+        $semester = "SP$currYear";
+    }
+    else if (($currDate > "$currYear-06-01") && ($currDate < "$currYear-08-01"))
+    {
+        $semester = "SU$currYear";
+    }
+    else
+    {
+        $semester = "FA$currYear";
+    }
+
+		if ($stmt = $mysqli->prepare("SELECT students.studentID, studentClassList.courseID FROM students, studentClassList WHERE studentClassList.studentID = students.studentID AND studentSemester = ?"))
+		{
+			$stmt->bind_param('s', $semester);
+
+			if ($stmt->execute())
+			{
+				$stmt->bind_result($studentID, $courseID);
+				$stmt->store_result();
+
+				if ($stmt->num_rows > 0)
+				{
+					// Get today's date
+					$currDate = date('Y-m-d');
+
+					// Output to CSV + Header Information
+					$filename = "allClassDataSingleFile-$currDate.csv";
+
+					// These are our individual CSV files
+					$fp = fopen("/var/www/html/CSCI291/rubricOutputs/$filename", 'w');
+
+					while ($stmt->fetch())
+					{
+						// Get the student's name (we will use this for the file name)
+						$studentName = getStudentName($studentID, $mysqli);
+
+						// Get the faculty name
+						$facultyName = getFacultyName($_SESSION['userID'], $mysqli);
+						
+						if ($stmt2 = $mysqli->prepare("SELECT rubricID FROM rubrics WHERE courseID = ?"))
+						{
+							$stmt2->bind_param('i', $courseID);
+
+							if ($stmt2->execute())
+							{
+								$stmt2->bind_result($rubricID);
+								$stmt2->store_result();
+
+								while ($stmt2->fetch())
+								{
+									// Go through each Rubric 
+									$rubricName = getRubricName($rubricID, $mysqli);
+								
+									if ($stmt3 = $mysqli->prepare("SELECT gradeRubricID, facultyID, facultyFeedback FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+									{	
+										$stmt3->bind_param('ii', $rubricID, $studentID);
+
+										if ($stmt3->execute())
+										{
+											$stmt3->bind_result($gradeRubricID, $facultyID, $facultyFeedback);
+											$stmt3->store_result();
+
+											if ($stmt3->num_rows > 0)
+											{
+												while ($stmt3->fetch())
+												{
+													// Initiliaze Empty Array that we will use to output to CSV
+													$outputArray = [];
+													array_push($outputArray, $studentName, "Faculty Name:", $facultyName);
+
+													$totalGrade = 0;
+													$totalPointsPossible = 0;
+													$facultyName = getFacultyName($facultyID, $mysqli);
+													$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
+
+													// Our Initial Array values	
+													$outputArray = array($courseName, $rubricName, $facultyName);
+
+													for ($i = 0; $i < count($rubricDescArray); $i++)
+													{
+														if ($rubricDescArray[$i] != NULL)
+														{
+															$pieceNumber = "piece" . ($i + 1);
+															$pointID = "point" . ($i + 1);
+
+															$totalGrade += getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
+															$totalPointsPossible += getRPPByPoint($rubricID, $pointID, $mysqli);
+															
+															// The subcategory name
+															$rubricSubCategory = $rubricDescArray[$i];
+
+															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
+
+															array_push($outputArray, $rubricSubCategory, $rubricCategoryScore);
+														}
+													}
+													$rubricPercentage =  number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "%";
+													array_push($outputArray, "Total Percentage:", $rubricPercentage, $facultyFeedback);
+
+													// Add our faculty members data to the CSV
+													fputcsv($fp, $outputArray);
+												}
+											}
+/*											else
+											{
+												echo "No grades for student";
+											}
+*/
+										}
+									}
+/*
+									else
+									{
+										echo "No grades for student";
+									}
+*/
+								}
+							}
+						}
+					}
+				}
+			}
+							// Close our file for the next loop
+							fclose($fp);
+		$day = date("Y-m-d");
+
+		// This will be our zip file
+		$outputFile = basename("allOutput-$day.zip");
+
+		// After the functions have been ran, zip the directory and output the file to the browser
+		apache_setenv('no-gzip', 1);
+		ini_set('zlib.output_compression', 0);
+
+		if (file_exists($outputFile))
+		{
+			shell_exec("rm -f $outputFile");
+		}
+
+		// Make our CSVs into a single Zip file
+		Zip("../../../rubricOutputs/", "$outputFile");
+
+		$_SESSION['success'] = 'Class ZIP should be generated, check the file';
+		header("Content-Type: application/zip");
+        header("Content-Transfer-Encoding: Binary");
+        header("Content-Length: ".filesize($outputFile));
+        header("Content-Disposition: attachment; filename=\"$outputFile\"");
+		ob_clean();
+	    flush();
+        readfile($outputFile);
+		exit;
+	}
+
+}
+
 function outputCourseData($mysqli)
 {
 	// Delete all files in the rubricOutput directory
@@ -231,7 +420,7 @@ function outputCourseData($mysqli)
 		shell_exec('mkdir ../../../rubricOutputs');
 	}
 	shell_exec('rm -rf ../../../rubricOutputs/*');
-	array_map('unlink', glob("classOutput*")); 
+	shell_exec('rm -rf classOutput*');
 
 	if (isset($_POST['courseID']) && !empty($_POST['courseID']))
 	{
@@ -265,8 +454,6 @@ function outputCourseData($mysqli)
 						// Output to CSV + Header Information
 						$filename = "$studentName-$currDate.csv";
 
-						// These are our individual CSV files
-						$fp = fopen("/var/www/html/CSCI291/rubricOutputs/$filename", 'w');
 
 						// Get the faculty name
 						$facultyName = getFacultyName($_SESSION['userID'], $mysqli);
@@ -296,6 +483,8 @@ function outputCourseData($mysqli)
 
 											if ($stmt3->num_rows > 0)
 											{
+						// These are our individual CSV files
+						$fp = fopen("/var/www/html/CSCI291/rubricOutputs/$filename", 'w');
 												while ($stmt3->fetch())
 												{
 													// Initiliaze Empty Array that we will use to output to CSV
@@ -334,16 +523,20 @@ function outputCourseData($mysqli)
 													fputcsv($fp, $outputArray);
 												}
 											}
+/*
 											else
 											{
 												echo "No grades for student";
 											}
+*/
 										}
 									}
+/*
 									else
 									{
 										echo "No grades for student";
 									}
+*/
 								}
 							}
 							// Close our file for the next loop
@@ -379,7 +572,168 @@ function outputCourseData($mysqli)
 		ob_clean();
 	    flush();
         readfile($outputFile);
-		exit;
+//		exit;
+	}
+}
+
+function outputCourseDataSingleFile($mysqli)
+{
+	// Delete all files in the rubricOutput directory
+	if (!is_dir("../../../rubricOutputs"))
+	{
+		shell_exec('mkdir ../../../rubricOutputs');
+	}
+	shell_exec('rm -rf ../../../rubricOutputs/*');
+	shell_exec('rm -rf classOutput*');
+
+	if (isset($_POST['courseID']) && !empty($_POST['courseID']))
+	{
+		$courseID = $_POST['courseID'];
+		$courseName = getCourseName($courseID, $mysqli);
+
+		// Output CSV Format would look like this
+		// File Name: Student's Name-Current Date.csv
+		// File Contents:
+		// Course Name,Rubric Name,Graded By Name,Descriptive Piece,Grade for Piece,Total Percentage Name, Total Percentage,Faculty Feedback
+
+		if ($stmt = $mysqli->prepare("SELECT studentID FROM studentClassList WHERE courseID = ?"))
+		{
+			$stmt->bind_param('i', $courseID);
+
+			if ($stmt->execute())
+			{
+				$stmt->bind_result($studentID);
+				$stmt->store_result();
+
+				if ($stmt->num_rows > 0)
+				{
+					// Get today's date
+					$currDate = date('Y-m-d');
+
+					// Output to CSV + Header Information
+					$filename = "courseDataSingleFile-$currDate.csv";
+					// These are our individual CSV files
+					$fp = fopen("/var/www/html/CSCI291/rubricOutputs/$filename", 'w');
+
+					while ($stmt->fetch())
+					{
+						// Get the student's name (we will use this for the file name)
+						$studentName = getStudentName($studentID, $mysqli);
+
+						if ($stmt2 = $mysqli->prepare("SELECT rubricID FROM rubrics WHERE courseID = ?"))
+						{
+							$stmt2->bind_param('i', $courseID);
+
+							if ($stmt2->execute())
+							{
+								$stmt2->bind_result($rubricID);
+								$stmt2->store_result();
+
+								while ($stmt2->fetch())
+								{
+									// Go through each Rubric 
+									$rubricName = getRubricName($rubricID, $mysqli);
+								
+									if ($stmt3 = $mysqli->prepare("SELECT gradeRubricID, facultyID, facultyFeedback FROM gradedRubrics WHERE rubricID = ? AND studentID = ?"))
+									{	
+										$stmt3->bind_param('ii', $rubricID, $studentID);
+
+										if ($stmt3->execute())
+										{
+											$stmt3->bind_result($gradeRubricID, $facultyID, $facultyFeedback);
+											$stmt3->store_result();
+
+											if ($stmt3->num_rows > 0)
+											{
+												while ($stmt3->fetch())
+												{
+													// Initiliaze Empty Array that we will use to output to CSV
+													$outputArray = [];
+
+													$totalGrade = 0;
+													$totalPointsPossible = 0;
+													$facultyName = getFacultyName($facultyID, $mysqli);
+													$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
+
+													array_push($outputArray, $studentName, "Faculty Name:", $facultyName);
+													// Our Initial Array values	
+													$outputArray = array($courseName, $rubricName, $facultyName);
+
+													for ($i = 0; $i < count($rubricDescArray); $i++)
+													{
+														if ($rubricDescArray[$i] != NULL)
+														{
+															$pieceNumber = "piece" . ($i + 1);
+															$pointID = "point" . ($i + 1);
+
+															$totalGrade += getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
+															$totalPointsPossible += getRPPByPoint($rubricID, $pointID, $mysqli);
+															
+															// The subcategory name
+															$rubricSubCategory = $rubricDescArray[$i];
+
+															$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
+
+															array_push($outputArray, $rubricSubCategory, $rubricCategoryScore);
+														}
+													}
+													$rubricPercentage =  number_format(($totalGrade / $totalPointsPossible) * 100, 2, '.', '') . "%";
+													array_push($outputArray, "Total Percentage:", $rubricPercentage, "Total Points:", $totalPointsPossible, $facultyFeedback);
+
+													// Add our faculty members data to the CSV
+													fputcsv($fp, $outputArray);
+												}
+											}
+/*
+											else
+											{
+												echo "No grades for student";
+											}
+*/
+										}
+									}
+/*
+									else
+									{
+										echo "No grades for student";
+									}
+*/
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// Close our file for the next loop
+		fclose($fp);
+		$day = date("Y-m-d");
+
+		// This will be our zip file
+		$outputFile = basename("classOutput-$courseID-$day.zip");
+
+		// After the functions have been ran, zip the directory and output the file to the browser
+		apache_setenv('no-gzip', 1);
+		ini_set('zlib.output_compression', 0);
+
+		if (file_exists($outputFile))
+		{
+			shell_exec("rm -f $outputFile");
+		}
+
+		// Make our CSVs into a single Zip file
+		Zip("../../../rubricOutputs/", "$outputFile");
+
+		$_SESSION['success'] = 'Class ZIP should be generated, check the file';
+		header("Content-Type: application/zip");
+        header("Content-Transfer-Encoding: Binary");
+        header("Content-Length: ".filesize($outputFile));
+        header("Content-Disposition: attachment; filename=\"$outputFile\"");
+		ob_clean();
+	    flush();
+        readfile($outputFile);
+//		exit;
 	}
 }
 
@@ -468,7 +822,7 @@ function outputStudentData($mysqli)
 											// The subcategory name
 											$rubricSubCategory = $rubricDescArray[$i];
 
-											$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli) . " / " . getRPPByPoint($rubricID, $pointID, $mysqli);
+											$rubricCategoryScore = getRubricGrade($gradeRubricID, $studentID, $pieceNumber, $mysqli);
 
 											array_push($outputArray, $rubricSubCategory, $rubricCategoryScore);
 										}
@@ -480,16 +834,20 @@ function outputStudentData($mysqli)
 									fputcsv($fp, $outputArray);
 								}
 							}
-							else
+/*							else
 							{
 								echo "No grades for student";
 							}
+*/
 						}
 					}
+
+/*
 					else
 					{
 						echo "No grades for student";
 					}
+*/
 				}
 			}
 		}

@@ -96,8 +96,7 @@ function createStudent($studentFirstName, $studentLastName, $studentEmail, $cour
     				$stmt->bind_param('ssssi', $studentFirstName, $studentLastName, $studentEmail, $semester, $courseNumber); 
 	    			if($stmt->execute())    // Execute the prepared query.
 					{
-   						$_SESSION['success'] = 'Student Account Creation Successful';
-			   			header('Location: ../../pages/createBulkStudent');
+						createStudentClassList($studentEmail, $courseNumber, $mysqli);
 					}
 				}
 			}
@@ -112,6 +111,34 @@ function createStudent($studentFirstName, $studentLastName, $studentEmail, $cour
 	{
    		$_SESSION['fail'] = 'Account Creation Failed, database select error';
    		header('Location: ../../pages/createBulkStudent');
+	}
+}
+
+function createStudentClassList($studentEmail, $courseID, $mysqli)
+{
+	if ($stmt = $mysqli->prepare("SELECT studentID FROM students WHERE studentEmail = ?"))
+	{
+		$stmt->bind_param('s', $studentEmail);
+
+		if ($stmt->execute())
+		{
+			$stmt->bind_result($studentID);
+			$stmt->store_result();
+
+			$stmt->fetch();
+		}
+	}
+
+
+	if ($stmt = $mysqli->prepare("INSERT INTO studentClassList (courseID, studentID) VALUES (?, ?)"))
+	{
+		$stmt->bind_param('ii', $courseID, $studentID);
+
+		if ($stmt->execute())
+		{
+   			$_SESSION['success'] = 'Student Account Creation Successful';
+			header('Location: ../../pages/createBulkStudent');
+		}
 	}
 }
 

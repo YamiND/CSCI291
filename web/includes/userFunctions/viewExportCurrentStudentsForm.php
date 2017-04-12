@@ -69,7 +69,17 @@ echo '
 									break;
 
 									case "3":
+										chooseClassSingleFileForm();										
+									// Single Class
+									break;
+
+									case "4":
 										chooseAllCurrentForm();
+									// All current Students
+									break;
+
+									case "5":
+										chooseAllCurrentSingleFileForm();
 									// All current Students
 									break;
 
@@ -103,8 +113,28 @@ echo '
 function chooseAllCurrentForm()
 {
 	generateFormStart("../includes/userFunctions/exportCurrentStudents", "post");
-		generateFormHiddenInput("choiceOption", "3");
+		generateFormHiddenInput("choiceOption", "4");
     	generateFormButton("selectCourse", "Confirm Export all Current Students");
+	generateFormEnd();
+}
+
+function chooseAllCurrentSingleFileForm()
+{
+	generateFormStart("../includes/userFunctions/exportCurrentStudents", "post");
+		generateFormHiddenInput("choiceOption", "5");
+    	generateFormButton("selectCourse", "Confirm Export all Current Students");
+	generateFormEnd();
+}
+
+function chooseClassSingleFileForm()
+{
+	generateFormStart("../includes/userFunctions/exportCurrentStudents", "post");
+		generateFormHiddenInput("choiceOption", "3");
+        generateFormStartSelectDiv("Select Course", "courseID");
+        	generateFormOption("1", "BIOL 398/399");
+        	generateFormOption("2", "BIOL 499");
+        generateFormEndSelectDiv();
+    	generateFormButton("selectCourse", "Select Course");
 	generateFormEnd();
 }
 
@@ -177,7 +207,9 @@ function getExportChoiceForm()
         generateFormStartSelectDiv("Select what to Export", "exportChoice");
 			generateFormOption("1", "Export Data for Single Current Student");
 			generateFormOption("2", "Export Data for Single Class");
-			generateFormOption("3", "Export Data for All Current Students");
+			generateFormOption("3", "Export Data for Single Class to Single File");
+			generateFormOption("4", "Export Data for All Current Students");
+			generateFormOption("5", "Export Data for All Current Students to Single File");
 		generateFormEndSelectDiv();
         generateFormButton("selectChoiceButton", "Select Choice");
     generateFormEnd();
