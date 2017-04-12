@@ -326,7 +326,6 @@ function outputAllDataSingleFile($mysqli)
 												{
 													// Initiliaze Empty Array that we will use to output to CSV
 													$outputArray = [];
-													array_push($outputArray, $studentName, "Faculty Name:", $facultyName);
 
 													$totalGrade = 0;
 													$totalPointsPossible = 0;
@@ -334,7 +333,8 @@ function outputAllDataSingleFile($mysqli)
 													$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
 													// Our Initial Array values	
-													$outputArray = array($courseName, $rubricName, $facultyName);
+													$outputArray = array($courseName, $rubricName);
+													array_push($outputArray, "Student Name:", $studentName, "Faculty Name:", $facultyName);
 
 													for ($i = 0; $i < count($rubricDescArray); $i++)
 													{
@@ -655,9 +655,9 @@ function outputCourseDataSingleFile($mysqli)
 													$facultyName = getFacultyName($facultyID, $mysqli);
 													$rubricDescArray = getRubricDescriptions($rubricID, $mysqli);
 
-													array_push($outputArray, $studentName, "Faculty Name:", $facultyName);
 													// Our Initial Array values	
-													$outputArray = array($courseName, $rubricName, $facultyName);
+													$outputArray = array($courseName, $rubricName);
+													array_push($outputArray, "Student Name:",$studentName, "Faculty Name:", $facultyName);
 
 													for ($i = 0; $i < count($rubricDescArray); $i++)
 													{
